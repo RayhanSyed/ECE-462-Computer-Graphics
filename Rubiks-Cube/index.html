@@ -1,0 +1,111 @@
+<html>
+
+<head>
+  <title>Rubiks Cube!</title>
+  <script id="vertex-shader" type="x-shader/x-vertex">
+    attribute vec4 vPosition;
+      attribute vec4 vColor;
+      varying vec4 fColor;
+
+      uniform mat4 projectionMatrix;
+      uniform mat4 modelViewMatrix;
+
+      void main() {
+          fColor = vColor;
+          gl_Position = projectionMatrix * modelViewMatrix * vPosition;
+      }
+    </script>
+  <script id="fragment-shader" type="x-shader/x-fragment">
+    precision mediump float;
+
+      varying vec4 fColor;
+
+      void main () {
+        gl_FragColor = fColor;
+      }
+    </script>
+  <script type="text/javascript" src="MV.js"></script>
+  <script type="text/javascript" src="webgl-utils.js"></script>
+  <script type="text/javascript" src="initShaders.js"></script>
+  <script type="text/javascript" src="RubiksCube.js"></script>
+</head>
+
+<body>
+  <div id="content" style="width: 800px;position: absolute; left: 30px;">
+    <br />
+    <button id="X0Btn" value="X0" style="width:127px; height:40px;font-size: 25px;">X-front</button>
+    <button id="X1Btn" value="X1" style="width:127px; height:40px;font-size: 25px;">X-mid</button>
+    <button id="X2Btn" value="X2" style="width:127px; height:40px;font-size: 25px;">X-back</button>
+    <br />
+    <button id="Z0Btn" value="Z0" style="width:127px; height:40px;font-size: 25px;">Z-bottom</button>
+    <button id="Z1Btn" value="Z1" style="width:127px; height:40px;font-size: 25px;">Z-middle</button>
+    <button id="Z2Btn" value="Z2" style="width:127px; height:40px;font-size: 25px;">Z-top</button>
+    <br />
+    <button id="Y0Btn" value="Y0" style="width:127px; height:40px;font-size: 25px;">Y-front</button>
+    <button id="Y1Btn" value="Y1" style="width:127px; height:40px;font-size: 25px;">Y-mid</button>
+    <button id="Y2Btn" value="Y2" style="width:127px; height:40px;font-size: 25px;">Y-back</button>
+    <br />
+    <br />
+    <br />
+    <canvas id="RubikGame" width="500" height="500"></canvas>
+    <br />
+    <br />
+    <i>Current Cube Status:</i>
+    <div id="status" style="width: 450px;font-size: 20px;"></div>
+    <br />
+    Please enter a number of turns: <input id="inputVal" style="width:180px; height:25px;font-size: 20px" type="text">
+    <br />
+    <br />
+    <button id="rdmBtn" style="width:180px; height:40px;font-size: 25px;">Randomize</button>
+    <button id="saveBtn" style="width:180px; height:40px;font-size: 25px;">Save File</button>
+    <br />
+    <a download="CurrentState.txt" href="" id="downloadlink"></a>
+    <button id="loadBtn" style="width:180px; height:40px;font-size: 25px;">Load File</button>
+    <input type="file" id="files" name="files[]" />
+    <output id="list"></output>
+
+  </div>
+  <div id="content" style="width: 800px;position: absolute; left: 550px">
+    <h1>Rubiks Cube!</h1>
+    <h2>Button Descriptions:</h2>
+    <p> The buttons correspond to an axis and a position with the front and back X and Y correspond</p>
+    <p> to the face closer and farther from the viewer in the starting position respectively. </p>
+    <p> The mid X and Y correspond similarly to the middle faces of X and Y. The Z buttons correspond </p>
+    <p> to their bottom, mid, and top positions for rotation. These buttons are relative to the </p>
+    <p>perspective of the viewer. </p>
+    <p>Clicking the button normally gives a counterclock wise rotation.</p>
+    <p>Holding shift while clicking a button will give a clockwise</p>
+    <p> rotation of the button instead. You can rotate the cube by holding</p>
+    <p> down left click and dragging around the mouse</p>
+    <br />
+    <p>To correctly load a file, please refresh the page before choosing the file.</p>
+    <p>Enjoy!</p>
+    <script>
+      function handleFileSelect(evt) {
+        var files = evt.target.files;
+        var reader = new FileReader();
+        f = files[0];
+        reader.onload = (function(theFile) {
+          LOADED = true;
+          return function(e) {
+            CONTENT = JSON.parse(reader.result);
+            var x, y, z;
+            for (x = 0; x < 3; x++) {
+              for (y = 0; y < 3; y++) {
+                for (z = 0; z < 3; z++) {
+                  CONTENT[x][y][z][4].matrix = true;
+                }
+              }
+            }
+          }
+        })(f);
+        reader.readAsText(f);
+      }
+      document.getElementById('files').addEventListener('change', handleFileSelect, false);
+    </script>
+
+
+  </div>
+</body>
+
+</html>
